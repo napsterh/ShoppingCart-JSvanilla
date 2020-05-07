@@ -1,6 +1,7 @@
 // Variables
 const carrito = document.getElementById('carrito');
 const curso = document.getElementById('lista-cursos');
+const listaCursos = document.querySelector('#lista-carrito tbody');
 
 
 //Listener
@@ -35,5 +36,31 @@ function comprarCurso(e){
 // Lee los datos dle curso
 
 function leerDatosCurso(curso){
-    console.log(curso);
+    const infoCurso = {
+        imagen : curso.querySelector('img').src,
+        titulo : curso.querySelector('h4').textContent,
+        precio : curso.querySelector('.precio span').textContent,
+        id : curso.querySelector('a').getAttribute('data-id')
+    }
+
+    insertarCarrito(infoCurso);
+}
+
+
+//muestra el curso seleccionado en el carrito
+
+function insertarCarrito(infoCurso){
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td>
+            <img src="${infoCurso.imagen}" width="100">
+        </td>
+        <td>${infoCurso.titulo}</td>
+        <td>${infoCurso.precio}</td>
+        <td>
+            <a href="#" class="borrar-curso data-id=${infoCurso.id}">X</a>
+        </td>
+    `;
+
+    listaCursos.appendChild(row);
 }

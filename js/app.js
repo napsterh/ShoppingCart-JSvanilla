@@ -18,6 +18,9 @@ function cargarEventListeners(){
     //Al vaciar el carrito
     vaciarCarritobtn.addEventListener('click', vaciarCarrito);
 
+    //Al cargar elemento, mostrar de LocalStorage
+    document.addEventListener('DOMContentLoaded', leerlocalStorage);
+
 }
 
 
@@ -52,17 +55,16 @@ function leerDatosCurso(curso){
 
 //muestra el curso seleccionado en el carrito
 
-function insertarCarrito(infoCurso){
-    
+function insertarCarrito(curso){
     const row = document.createElement('tr');
     row.innerHTML = `
         <td>
-            <img src="${infoCurso.imagen}" width="100">
+            <img src="${curso.imagen}" width="100">
         </td>
-        <td>${infoCurso.titulo}</td>
-        <td>${infoCurso.precio}</td>
+        <td>${curso.titulo}</td>
+        <td>${curso.precio}</td>
         <td>
-            <a href="#" class="borrar-curso data-id=${infoCurso.id}">X</a>
+            <a href="#" class="borrar-curso data-id=${curso.id}">X</a>
         </td>
     `;
 
@@ -120,4 +122,30 @@ function obtenerCursoslocalStorage() {
         cursosLS = JSON.parse(localStorage.getItem('cursos'));
     }
     return cursosLS;
+}
+
+//Impeime los cursos de localStorage en el carrito
+
+function leerlocalStorage(){
+    let cursosLS;
+
+    cursosLS = obtenerCursoslocalStorage();
+
+    cursosLS.forEach(function(curso){
+        //construir el template
+    
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>
+                <img src="${curso.imagen}" width="100">
+            </td>
+            <td>${curso.titulo}</td>
+            <td>${curso.precio}</td>
+            <td>
+                <a href="#" class="borrar-curso data-id=${curso.id}">X</a>
+            </td>
+        `;
+        listaCursos.appendChild(row);
+
+    });
 }

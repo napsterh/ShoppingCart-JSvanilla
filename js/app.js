@@ -64,7 +64,7 @@ function insertarCarrito(curso){
         <td>${curso.titulo}</td>
         <td>${curso.precio}</td>
         <td>
-            <a href="#" class="borrar-curso data-id=${curso.id}">X</a>
+            <a href="#" class="borrar-curso" data-id="${curso.id}">X</a>
         </td>
     `;
 
@@ -77,10 +77,15 @@ function insertarCarrito(curso){
 function eliminarCurso(e){
     e.preventDefault();
 
-    let curso;
+    let curso,
+    cursoId;
     if(e.target.classList.contains('borrar-curso')){
         e.target.parentElement.parentElement.remove();
+        curso = e.target.parentElement.parentElement;
+        cursoId = curso.querySelector('a').getAttribute('data-id'); 
     }
+
+    eliminarCursoLocalStorage(cursoId);
 }
 
 //Elimina los cursos del DOM
@@ -142,10 +147,27 @@ function leerlocalStorage(){
             <td>${curso.titulo}</td>
             <td>${curso.precio}</td>
             <td>
-                <a href="#" class="borrar-curso data-id=${curso.id}">X</a>
+                <a href="#" class="borrar-curso" data-id="${curso.id}">X</a>
             </td>
         `;
         listaCursos.appendChild(row);
 
     });
+}
+
+
+//Elimina el curso por ID de LocalStorage
+
+function eliminarCursoLocalStorage(curso){
+    let cursosLS;
+    
+    cursosLS = obtenerCursoslocalStorage();
+
+    cursosLS.forEach(function(cursoLS, index) {
+        if(cursoLS.id === curso){
+            cursosLS.splice(index, 1);
+        }
+    });
+
+    localStorage.setItem('cursos', JSON.stringify(cursosLS));
 }

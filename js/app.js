@@ -97,17 +97,21 @@ function vaciarCarrito(){
     while(listaCursos.firstChild){
         listaCursos.removeChild(listaCursos.firstChild);
     }
-    return false;
+
+    //vaciar LocalStorage
+    vaciarLocalStorage();
+
+    return false; //Hará que corte la funcion
 }
 
-//almacena cursos del carrito a local storage
 
+//almacena cursos del carrito a local storage
 function guardarCursoLocalStorage(curso){
     let cursos;
 
     //Toma el valor de un arreglo con datos de LS o vacio
     cursos = obtenerCursoslocalStorage();
-    
+
     //curso seleccionado se agrega al carrito
     cursos.push(curso);
 
@@ -138,7 +142,7 @@ function leerlocalStorage(){
 
     cursosLS.forEach(function(curso){
         //construir el template
-    
+
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>
@@ -160,14 +164,24 @@ function leerlocalStorage(){
 
 function eliminarCursoLocalStorage(curso){
     let cursosLS;
-    
+
+    //obtenemos el arreglo de curso
     cursosLS = obtenerCursoslocalStorage();
 
+    //Iteramos comparando el ID del curso borrado con el de localStorage
     cursosLS.forEach(function(cursoLS, index) {
         if(cursoLS.id === curso){
             cursosLS.splice(index, 1);
         }
     });
 
+    //añadimos el valor actual a local storage
     localStorage.setItem('cursos', JSON.stringify(cursosLS));
+}
+
+
+//Elimina todos los cursos de loccalStorage
+
+function vaciarLocalStorage(){
+    localStorage.clear();
 }

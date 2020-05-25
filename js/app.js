@@ -1,187 +1,183 @@
 // Variables
-const carrito = document.getElementById('carrito');
-const curso = document.getElementById('lista-cursos');
-const listaCursos = document.querySelector('#lista-carrito tbody');
-const vaciarCarritobtn = document.getElementById('vaciar-carrito');
+
+const getCarrito = document.getElementById('carrito');
+const getCurso = document.getElementById('lista-cursos');
+const getListaCursos = document.querySelector('#lista-carrito tbody');
+const getVaciarCarrito = document.getElementById('vaciar-carrito');
 
 
 //Listener
-cargarEventListeners();
 
-function cargarEventListeners(){
-    // Dispara cuando se presiona agregar carrito
-    curso.addEventListener('click', comprarCurso);
+loadEventListener();
 
-    //Cuando se elimina un curso del carrito
-    carrito.addEventListener('click', eliminarCurso);
+function loadEventListener(){
+    //disparar al presionar "agregar carrito"
+    getCurso.addEventListener('click', buyCurso);
 
-    //Al vaciar el carrito
-    vaciarCarritobtn.addEventListener('click', vaciarCarrito);
+    //Eliminar un curso del carrito
+    getCarrito.addEventListener('click', deleteCurso);
 
-    //Al cargar elemento, mostrar de LocalStorage
-    document.addEventListener('DOMContentLoaded', leerlocalStorage);
+    //Vaciar el carrito
+    getVaciarCarrito.addEventListener('click', cleanCarrito);
+
+    //Al cargar, obtener los elementos del LS
+    document.addEventListener('DOMContentLoaded', writeLocalStorage);
 
 }
-
-
 
 //Funciones
-//Funcion que añade el curso al carrito
+//Funcion para añadir el producto al carrito
 
-function comprarCurso(e){
+function buyCurso(e){
     e.preventDefault();
-// Delegation para agregar al carrito
+    //Delegation para agregar al carrito
     if(e.target.classList.contains('agregar-carrito')){
         const curso = e.target.parentElement.parentElement;
-        //Enviamos los sursos seleccionados para tomar sus datos
-        leerDatosCurso(curso);
+        //Enviar los datos del curso seleccionado
+        getDatosCurso(curso);
     }
 }
-
 
 // Lee los datos dle curso
 
-function leerDatosCurso(curso){
-    const infoCurso = {
+function getDatosCurso(curso){
+    const datosCurso = {
         imagen : curso.querySelector('img').src,
-        titulo : curso.querySelector('h4').textContent,
-        precio : curso.querySelector('.precio span').textContent,
+        titulo: curso.querySelector('h4').textContent,
+        profesor: curso.querySelector('p').textContent,
+        precio: curso.querySelector('.precio span').textContent,
         id : curso.querySelector('a').getAttribute('data-id')
     }
-
-    insertarCarrito(infoCurso);
+    insertCarrito(datosCurso);
 }
-
 
 //muestra el curso seleccionado en el carrito
 
-function insertarCarrito(curso){
+function insertCarrito(dataCurso){
     const row = document.createElement('tr');
     row.innerHTML = `
         <td>
-            <img src="${curso.imagen}" width="100">
+            <img src="${dataCurso.imagen}" width="100">
         </td>
-        <td>${curso.titulo}</td>
-        <td>${curso.precio}</td>
+        <td>${dataCurso.titulo}</td>
+        <td>${dataCurso.profesor}</td>
+        <td>${dataCurso.precio}</td>
         <td>
-            <a href="#" class="borrar-curso" data-id="${curso.id}">X</a>
+            <a href="#" class="borrar-curso" data-id=${dataCurso.id}>X</a>
         </td>
     `;
 
-    listaCursos.appendChild(row);
-    guardarCursoLocalStorage(curso);
+    getListaCursos.appendChild(row);
+
+    //Giuardar en local Storage
+    saveCourseLocalStorage(dataCurso);
 }
 
-
 // Elimina el curso del carrito en el DOM
-function eliminarCurso(e){
+
+function deleteCurso(e){
     e.preventDefault();
 
-    let curso,
-    cursoId;
+    let course;
+    let idCurso;
     if(e.target.classList.contains('borrar-curso')){
         e.target.parentElement.parentElement.remove();
         curso = e.target.parentElement.parentElement;
-        cursoId = curso.querySelector('a').getAttribute('data-id'); 
+        cursoId = curso.querySelector('a').getAttribute('data-id');
     }
 
-    eliminarCursoLocalStorage(cursoId);
+    deleteCourseLocalStorage(cursoId);
 }
 
 //Elimina los cursos del DOM
-function vaciarCarrito(){
-    //forma lenta
-    //listaCursos.innerHTML = '';
-
-    //forma rapida y recomendada
-    while(listaCursos.firstChild){
-        listaCursos.removeChild(listaCursos.firstChild);
+function cleanCarrito(){
+    //forma rapida
+    while(getListaCursos.firstChild){
+        getListaCursos.removeChild(getListaCursos.firstChild);
     }
 
-    //vaciar LocalStorage
-    vaciarLocalStorage();
+    //clean Local Storage
+    cleanCourseLocalStorage();
 
-    return false; //Hará que corte la funcion
+    return false;
+
 }
-
 
 //almacena cursos del carrito a local storage
-function guardarCursoLocalStorage(curso){
-    let cursos;
+function saveCourseLocalStorage(dataCurso){
 
-    //Toma el valor de un arreglo con datos de LS o vacio
-    cursos = obtenerCursoslocalStorage();
+    let courses;
 
-    //curso seleccionado se agrega al carrito
-    cursos.push(curso);
+    //Tomar valores de local storage: vacio o con valores
+    courses = getCourseLocalStorage();
 
-    localStorage.setItem('cursos', JSON.stringify(cursos) );
+    //curso seleciconado se agrega al carrito
+    courses.push(dataCurso);
+
+    localStorage.setItem('courses', JSON.stringify(courses) );
+
 }
 
-
-
 //comprueba que haya elementos en local storage
-function obtenerCursoslocalStorage() {
+function getCourseLocalStorage(){
     let cursosLS;
 
-    //comprobamos si hay algo en locaStorage
-    if(localStorage.getItem('cursos') === null){
+    //comprobar si hay algo en localStorage
+    if(localStorage.getItem('courses') === null){
         cursosLS = [];
     }else {
-        cursosLS = JSON.parse(localStorage.getItem('cursos'));
+        cursosLS = JSON.parse(localStorage.getItem('courses'));
     }
     return cursosLS;
 }
 
 //Impeime los cursos de localStorage en el carrito
 
-function leerlocalStorage(){
-    let cursosLS;
+function writeLocalStorage(){
+    let coursesLS;
 
-    cursosLS = obtenerCursoslocalStorage();
+    coursesLS = getCourseLocalStorage();
 
-    cursosLS.forEach(function(curso){
-        //construir el template
-
+    coursesLS.forEach(function(courseLS) {
+        // building template
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>
-                <img src="${curso.imagen}" width="100">
+                <img src="${courseLS.imagen}" width="100">
             </td>
-            <td>${curso.titulo}</td>
-            <td>${curso.precio}</td>
+            <td>${courseLS.titulo}</td>
+            <td>${courseLS.profesor}</td>
+            <td>${courseLS.precio}</td>
             <td>
-                <a href="#" class="borrar-curso" data-id="${curso.id}">X</a>
+            <a href="#" class="borrar-curso" data-id=${courseLS.id}>X</a>
             </td>
         `;
-        listaCursos.appendChild(row);
+        getListaCursos.appendChild(row);
+    })
 
-    });
+
 }
-
 
 //Elimina el curso por ID de LocalStorage
 
-function eliminarCursoLocalStorage(curso){
-    let cursosLS;
+function deleteCourseLocalStorage(courseId){
+    let coursesLS;
 
-    //obtenemos el arreglo de curso
-    cursosLS = obtenerCursoslocalStorage();
+    //obetener el arreglo de cursos
+    coursesLS = getCourseLocalStorage();
 
-    //Iteramos comparando el ID del curso borrado con el de localStorage
-    cursosLS.forEach(function(cursoLS, index) {
-        if(cursoLS.id === curso){
-            cursosLS.splice(index, 1);
+    //Iteramos comparando el curso a aliminar de DOM con el de LS
+    coursesLS.forEach(function(courseLS, index) {
+        if(courseLS.id === courseId){
+            coursesLS.splice(index, 1);
         }
     });
-
-    //añadimos el valor actual a local storage
-    localStorage.setItem('cursos', JSON.stringify(cursosLS));
+    //Añadir valor actual a Local Storage
+    localStorage.setItem('courses', JSON.stringify(coursesLS));
 }
-
 
 //Elimina todos los cursos de loccalStorage
 
-function vaciarLocalStorage(){
+function cleanCourseLocalStorage(){
     localStorage.clear();
 }

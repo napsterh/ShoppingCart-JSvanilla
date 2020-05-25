@@ -1,6 +1,11 @@
 body {
     background-color: #fff6f6
 }
+
+.logo img{
+    width: 45%;
+}
+
 h1 {
     text-align: center;
 }
